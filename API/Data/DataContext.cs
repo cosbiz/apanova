@@ -8,7 +8,17 @@ namespace API.Data
         public DataContext(DbContextOptions options) : base(options)
         {
         }
-
         public DbSet<AppUser> Users { get; set; }
+        public DbSet<Message> Messages { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<Message>()
+                .HasOne(u => u.AppUser)
+                .WithMany(a => a.Messages)
+                .HasForeignKey(aa => aa.AppUserId);
+        }
     }
 }
