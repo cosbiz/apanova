@@ -25,7 +25,7 @@ namespace API.Controllers
             _userRepository = userRepository;
         }
 
-    [AllowAnonymous]
+    [Authorize]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
     {
@@ -35,7 +35,7 @@ namespace API.Controllers
         return Ok(usersToReturn);
     }
 
-    [AllowAnonymous]
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<MemberDto>> GetUserById(int id)
     {
@@ -43,6 +43,7 @@ namespace API.Controllers
         return _mapper.Map<MemberDto>(user);
     }
 
+    [Authorize(Policy = "RequireAdminRole")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(int id)
     {

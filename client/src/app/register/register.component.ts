@@ -7,7 +7,6 @@ import { AccountService } from '../_services/account.service';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-  @Output() cancelRegister = new EventEmitter();
   model: any = {};
 
   constructor(private accountService: AccountService) { }
@@ -18,14 +17,8 @@ export class RegisterComponent implements OnInit {
   register() {
     this.accountService.register(this.model).subscribe(response => {
       console.log(response);
-      this.cancel();
     }, error => {
       console.log(error);
     })
   }
-
-  cancel() {
-    this.cancelRegister.emit(false);
-  }
-
 }

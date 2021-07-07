@@ -27,23 +27,35 @@ export class AccountService {
   }
 
   register(model: any) {
-    return this.http.post(this.baseUrl + 'account/register', model).pipe(
-      map((user: User) => {
-        if (user) {
-          localStorage.setItem('user', JSON.stringify(user));
-          this.currentUserSource.next(user);
-        }
-        return user;
-      })
-    )
+    return this.http.post(this.baseUrl + 'account/register', model)
+  }
+
+  getUsers() {
+    return this.http.get(this.baseUrl + 'users')
+  }
+
+  deleteUser(id: number) {
+    return this.http.delete(this.baseUrl + 'users/' + id);
   }
 
   setCurrentUser(user: User) {
+    user.roles = [];
+    const roles = this.getDecodedToken(user.token).role;
+    Array.isArray(roles) ? user.roles = roles : user.roles.push(roles);
+    localStorage.setItem('user', JSON.stringify(user));
     this.currentUserSource.next(user);
+  }
+
+  getUsersWithRoles() {
+    return this.http.get(this.baseUrl + 'admin/users-with-roles');
   }
 
   logout() {
     localStorage.removeItem('user');
     this.currentUserSource.next(null);
+  }
+
+  getDecodedToken(token) {
+    return JSON.parse(atob(token.split('.')[1]));
   }
 }

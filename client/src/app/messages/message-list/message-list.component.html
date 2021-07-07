@@ -1,1 +1,9 @@
-<p>message-list works!</p>
+<div *ngFor="let message of messages" class="card mt-2">
+    <div class="card-body">
+        <h5 class="card-title">Title: {{message.title}}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Date: {{message.createDate | date}}</h6>
+        <p class="card-text">Bio: {{message.messageBody}}</p>
+        <a routerLink='/message/{{message.id}}' class="card-link">Edit message</a>        
+    </div>
+</div>
+

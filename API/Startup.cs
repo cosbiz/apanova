@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using API.Data;
+using API.Entities;
 using API.Helpers;
 using API.Interfaces;
 using API.Services;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -34,7 +36,7 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
+            services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
@@ -43,6 +45,18 @@ namespace API
                 options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
             });
             services.AddCors();
+            services.AddIdentityCore<AppUser>(opt => 
+            {
+                opt.Password.RequireDigit = false;
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequiredLength = 6;
+            })
+                .AddRoles<AppRole>()
+                .AddRoleManager<RoleManager<AppRole>>()
+                .AddSignInManager<SignInManager<AppUser>>()
+                .AddRoleValidator<RoleValidator<AppRole>>()
+                .AddEntityFrameworkStores<DataContext>();
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => 
                 {
@@ -54,6 +68,13 @@ namespace API
                         ValidateAudience = false,
                     };
                 });
+            
+            services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+                opt.AddPolicy("ModerateMessageRole", policy => policy.RequireRole("Admin", "UserAccount"));
+            });
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

@@ -10,6 +10,7 @@ namespace API.Helpers
         {
             CreateMap<AppUser, MemberDto>();
             CreateMap<Message, MessageDto>();
+            CreateMap<MessageDto, Message>();
         }
     }
 }

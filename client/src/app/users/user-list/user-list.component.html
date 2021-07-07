@@ -1,1 +1,8 @@
-<p>user-list works!</p>
+<div *ngFor="let user of users" class="card mt-2">
+    <div class="card-body">
+        <h5 class="card-title">Name: {{user.username}}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Role: </h6>
+        <p class="card-text">Bio: {{user.bio}}</p>
+        <a [routerLink]="" (click)="deleteUser(user.id)" class="card-link">Delete user</a>
+    </div>
+</div>

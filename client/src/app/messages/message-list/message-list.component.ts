@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { take } from 'rxjs/operators';
+import { AccountService } from 'src/app/_services/account.service';
+import { MessageService } from 'src/app/_services/message.service';
 
 @Component({
   selector: 'app-message-list',
@@ -6,10 +9,17 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./message-list.component.css']
 })
 export class MessageListComponent implements OnInit {
+  messages: any;
 
-  constructor() { }
+  constructor(private messageService: MessageService) { }
 
   ngOnInit(): void {
+    this.getMessages()
   }
 
+  getMessages() {
+    this.messageService.getMessages().subscribe((messages) => {
+      this.messages = messages;
+    })
+  }
 }
