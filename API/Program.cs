@@ -28,14 +28,13 @@ namespace API
                 var userManager = services.GetRequiredService<UserManager<AppUser>>();
                 var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
                 context.Database.MigrateAsync();
-                Seed.SeedUsers(userManager, roleManager);
+                Seed.SeedUsers(userManager, roleManager, context);
             }
             catch (Exception ex)
             {
                 var logger = services.GetRequiredService<ILogger<Program>>();
                 logger.LogError(ex, "An error occured during migration seed");
             }
-
             host.Run();
         }
 

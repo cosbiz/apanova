@@ -48,16 +48,30 @@ namespace API.Controllers
 
         [HttpGet("fetchFromApi")]
         public async Task<ActionResult<MessageDetail>> GetFromApi()
-        {   
+        { 
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == User.FindFirstValue(ClaimTypes.Name));
+
             WebClient client = new WebClient();
 
             var json_data = client.DownloadString("https://6b9b8bef3c0b387287e826964b122804.m.pipedream.net/");
 
-            var messagesFromUrl = JsonConvert.DeserializeObject<List<MessageDetail>>(json_data);
+            var messagesFromUrl = JsonConvert.DeserializeObject<Root>(json_data).Content.MessageDetails;
             
             foreach(var data in messagesFromUrl ) 
             { 
-                Console.WriteLine(data.Title);
+                var message = new Message
+                {
+                    Title = data.Title,
+                    MessageBody = data.MessageBody,
+                    // CreateDate = data.CreateDate.ToDate,
+                    CreateBy = data.CreateBy,
+                    DeepLinkAction = data.DeepLinkAction,
+                    ImportanceLevel = data.ImportanceLevel,
+                    AppUserId = 5
+                };
+
+                _context.Messages.Add(message);
+                await _context.SaveChangesAsync();
             }
 
             return NoContent();
